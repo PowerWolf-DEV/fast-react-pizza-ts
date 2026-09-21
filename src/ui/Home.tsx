@@ -1,7 +1,7 @@
-import CreateUser from "../features/user/CreateUser";
+import CreateUser from "@/features/user/CreateUser";
 import Button from "./Button";
-import { useAppSelector } from "../hooks";
-import { getUsername } from "../features/user/userSlice";
+import { useAppSelector } from "@/hooks";
+import { getUsername } from "@/features/user/userSlice";
 
 function Home() {
   const username = useAppSelector(getUsername);

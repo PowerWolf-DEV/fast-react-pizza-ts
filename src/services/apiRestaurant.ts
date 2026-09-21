@@ -1,4 +1,4 @@
-import type { CartItem } from "../features/cart/cartSlice";
+import type { CartItem } from "@/features/cart/cartSlice";
 
 const API_URL = "https://react-fast-pizza-api.jonas.io/api";
 
