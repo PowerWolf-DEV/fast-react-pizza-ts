@@ -1,20 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useFetcher, useNavigate, type ActionFunctionArgs } from "react-router";
+import { createOrder } from "@/services/apiRestaurant";
+import type { Order, OrderDetails } from "@/services/apiRestaurant";
+import Button from "@/ui/Button";
+import { useAppDispatch, useAppSelector } from "@/hooks";
+import { fetchAddress } from "@/features/user/userSlice";
 import {
-  Form,
-  redirect,
-  useActionData,
-  useNavigation,
-  type ActionFunctionArgs,
-} from "react-router";
-import { createOrder } from "../../services/apiRestaurant";
-import type { Order, OrderDetails } from "../../services/apiRestaurant";
-import Button from "../../ui/Button";
-import { useAppDispatch, useAppSelector } from "../../hooks";
-import { fetchAddress } from "../user/userSlice";
-import { clearCart, getCart, getTotalCartPrice } from "../cart/cartSlice";
-import EmptyCart from "../cart/EmptyCart";
-import store from "../../store";
-import { formatCurrency } from "../../utils/helpers";
+  clearCart,
+  getCart,
+  getTotalCartPrice,
+} from "@/features/cart/cartSlice";
+import EmptyCart from "@/features/cart/EmptyCart";
+import { formatCurrency } from "@/utils/helpers";
 
 // https://uibakery.io/regex-library/phone-number
 const isValidPhone = (str: string) =>
@@ -24,9 +21,10 @@ const isValidPhone = (str: string) =>
 
 function CreateOrder() {
   const [withPriority, setWithPriority] = useState(false);
-  const navigation = useNavigation();
-  const isSubmitting = navigation.state === "submitting";
-  const formErrors = useActionData();
+  const fetcher = useFetcher();
+  const navigate = useNavigate();
+
+  const isSubmitting = fetcher.state === "submitting";
 
   const {
     username,
@@ -45,14 +43,30 @@ function CreateOrder() {
   const priorityPrice = withPriority ? totalCartPrice * 0.2 : 0;
   const totalPrice = totalCartPrice + priorityPrice;
 
+  // Handle successful order creation
+  useEffect(() => {
+    if (
+      fetcher.data &&
+      typeof fetcher.data === "object" &&
+      "id" in fetcher.data
+    ) {
+      dispatch(clearCart());
+      navigate(`/order/${fetcher.data.id}`);
+    }
+  }, [fetcher.data, dispatch, navigate]);
+
+  const isErrorResponse =
+    fetcher.data && typeof fetcher.data === "object" && "phone" in fetcher.data;
+
+  const phoneError = isErrorResponse ? fetcher.data.phone : undefined;
+
   if (!cart.length) return <EmptyCart />;
 
   return (
     <div className="px-4 py-6">
       <h2 className="text-sx mb-8 font-semibold">Ready to order? Let's go!</h2>
 
-      {/* <Form method="POST" action="/order/new"> */}
-      <Form method="POST">
+      <fetcher.Form method="POST">
         <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center">
           <label className="sm:basis-40" htmlFor="customer">
             First Name
@@ -82,9 +96,9 @@ function CreateOrder() {
               autoComplete="phone"
               required
             />
-            {formErrors?.phone && (
+            {phoneError && (
               <p className="mt-2 rounded-md bg-red-100 p-2 text-xs text-red-700">
-                {formErrors.phone}
+                {phoneError}
               </p>
             )}
           </div>
@@ -159,7 +173,7 @@ function CreateOrder() {
               : `Order now for ${formatCurrency(totalPrice)}`}
           </Button>
         </div>
-      </Form>
+      </fetcher.Form>
     </div>
   );
 }
@@ -177,7 +191,6 @@ async function action({ request }: ActionFunctionArgs) {
   }
 
   const data = Object.fromEntries(formData) as Record<string, string>;
-  // console.log(data);
   const order: Order = {
     customer: data.customer,
     address: data.address,
@@ -186,7 +199,6 @@ async function action({ request }: ActionFunctionArgs) {
     cart: JSON.parse(data.cart),
     priority: data.priority === "true",
   };
-  // console.log(order);
 
   // Handle potential errors
   const errors: Record<string, string> = {};
@@ -199,10 +211,7 @@ async function action({ request }: ActionFunctionArgs) {
   // If everything is okay, create new order and redirect
   const createdOrder: OrderDetails = await createOrder(order);
 
-  // clear the cart after new order was created
-  store.dispatch(clearCart());
-
-  return redirect(`/order/${createdOrder.id}`);
+  return createdOrder;
 }
 
 CreateOrder.action = action;

@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { RootState } from "../../store";
+import type { RootState } from "@/store";
 
-// * API requires CartItem to have pizzaId instead of id
+// API requires CartItem to have pizzaId instead of id
 export type CartItem = {
   pizzaId: number;
   name: string;
@@ -14,20 +14,21 @@ const initialState: { cart: CartItem[] } = {
   cart: [],
 };
 
+function removeItem(state: { cart: CartItem[] }, pizzaId: number) {
+  state.cart = state.cart.filter((item) => item.pizzaId !== pizzaId);
+}
+
 const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
     addItem(state, action: PayloadAction<CartItem>) {
-      // payload = newItem(Pizza)
       state.cart.push(action.payload);
     },
     deleteItem(state, action: PayloadAction<number>) {
-      // payload = Pizza id
-      state.cart = state.cart.filter((item) => item.pizzaId !== action.payload);
+      removeItem(state, action.payload);
     },
     increaseItemQuantity(state, action: PayloadAction<number>) {
-      // payload = Pizza id
       const item = state.cart.find((item) => item.pizzaId === action.payload);
       if (item) {
         item.quantity++;
@@ -35,14 +36,14 @@ const cartSlice = createSlice({
       }
     },
     decreaseItemQuantity(state, action: PayloadAction<number>) {
-      // payload = Pizza id
       const item = state.cart.find((item) => item.pizzaId === action.payload);
       if (item) {
         item.quantity--;
         item.totalPrice = item.quantity * item.unitPrice;
 
-        if (item.quantity === 0)
-          cartSlice.caseReducers.deleteItem(state, action);
+        if (item.quantity === 0) {
+          removeItem(state, action.payload);
+        }
       }
     },
     clearCart(state) {

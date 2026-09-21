@@ -6,13 +6,9 @@ import {
   useFetcher,
   type LoaderFunctionArgs,
 } from "react-router";
-import { getOrder } from "../../services/apiRestaurant";
-import type { OrderDetails, Pizza } from "../../services/apiRestaurant";
-import {
-  calcMinutesLeft,
-  formatCurrency,
-  formatDate,
-} from "../../utils/helpers";
+import { getOrder } from "@/services/apiRestaurant";
+import type { OrderDetails, Pizza } from "@/services/apiRestaurant";
+import { calcMinutesLeft, formatCurrency, formatDate } from "@/utils/helpers";
 import OrderItem from "./OrderItem";
 import { useEffect } from "react";
 import UpdateOrder from "./UpdateOrder";
@@ -102,15 +98,12 @@ function Order() {
 }
 
 async function loader({ params }: LoaderFunctionArgs) {
-  // console.log(params);
   const { orderId } = params;
   if (!orderId) {
     return redirect("/");
   }
-  // if (!orderId) throw new Error('Odrer ID is required');
 
   const order: OrderDetails = await getOrder(orderId);
-  // console.log(order);
   return order;
 }
 
