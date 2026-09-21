@@ -1,14 +1,14 @@
-import { formatCurrency } from "../../utils/helpers";
-import type { Pizza } from "../../services/apiRestaurant";
-import Button from "../../ui/Button";
-import { useAppDispatch, useAppSelector } from "../../hooks";
+import { formatCurrency } from "@/utils/helpers";
+import type { Pizza } from "@/services/apiRestaurant";
+import Button from "@/ui/Button";
+import { useAppDispatch, useAppSelector } from "@/hooks";
 import {
   addItem,
   getCurrentQuantityById,
   type CartItem,
-} from "../cart/cartSlice";
-import DeleteCartItem from "../cart/DeleteCartItem";
-import UpdateItemQuantity from "../cart/UpdateItemQuantity";
+} from "@/features/cart/cartSlice";
+import DeleteCartItem from "@/features/cart/DeleteCartItem";
+import UpdateItemQuantity from "@/features/cart/UpdateItemQuantity";
 
 function MenuItem({ pizza }: { pizza: Pizza }) {
   const { id, name, unitPrice, ingredients, soldOut, imageUrl } = pizza;

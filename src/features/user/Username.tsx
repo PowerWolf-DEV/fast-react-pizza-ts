@@ -1,4 +1,4 @@
-import { useAppSelector } from "../../hooks";
+import { useAppSelector } from "@/hooks";
 import { getUsername } from "./userSlice";
 
 function Username() {

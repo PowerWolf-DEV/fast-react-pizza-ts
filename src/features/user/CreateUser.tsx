@@ -1,8 +1,8 @@
 import { useState, type SubmitEvent } from "react";
-import Button from "../../ui/Button";
+import Button from "@/ui/Button";
 import { updateName } from "./userSlice";
 import { useNavigate } from "react-router";
-import { useAppDispatch } from "../../hooks";
+import { useAppDispatch } from "@/hooks";
 
 function CreateUser() {
   const [username, setUsername] = useState("");

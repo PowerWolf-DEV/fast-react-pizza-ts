@@ -1,5 +1,5 @@
-import { formatCurrency } from "../../utils/helpers";
-import type { CartItem as Item } from "../cart/cartSlice";
+import { formatCurrency } from "@/utils/helpers";
+import type { CartItem as Item } from "@/features/cart/cartSlice";
 import DeleteCartItem from "./DeleteCartItem";
 import UpdateItemQuantity from "./UpdateItemQuantity";
 

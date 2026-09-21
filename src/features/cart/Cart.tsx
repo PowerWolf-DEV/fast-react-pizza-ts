@@ -1,9 +1,9 @@
-import LinkButton from "../../ui/LinkButton";
-import Button from "../../ui/Button";
+import LinkButton from "@/ui/LinkButton";
+import Button from "@/ui/Button";
 import CartItem from "./CartItem";
-import { useAppDispatch, useAppSelector } from "../../hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks";
 import { getCart, clearCart } from "./cartSlice";
-import { getUsername } from "../user/userSlice";
+import { getUsername } from "@/features/user/userSlice";
 import EmptyCart from "./EmptyCart";
 
 function Cart() {

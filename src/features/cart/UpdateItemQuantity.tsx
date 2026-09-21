@@ -1,5 +1,5 @@
-import { useAppDispatch } from "../../hooks";
-import Button from "../../ui/Button";
+import { useAppDispatch } from "@/hooks";
+import Button from "@/ui/Button";
 import { decreaseItemQuantity, increaseItemQuantity } from "./cartSlice";
 
 function UpdateItemQuantity({

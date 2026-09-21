@@ -1,5 +1,5 @@
-import { formatCurrency } from "../../utils/helpers";
-import type { CartItem } from "../cart/cartSlice";
+import { formatCurrency } from "@/utils/helpers";
+import type { CartItem } from "@/features/cart/cartSlice";
 
 type OrderItemProps = {
   item: CartItem;
