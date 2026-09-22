@@ -4,9 +4,13 @@ import Button from "@/ui/Button";
 
 function UpdateOrder() {
   const fetcher = useFetcher();
+  const isSubmitting = fetcher.state === "submitting";
+
   return (
     <fetcher.Form method="PATCH" className="text-right">
-      <Button type="primary">Make priority</Button>
+      <Button disabled={isSubmitting} type="primary">
+        Make priority
+      </Button>
     </fetcher.Form>
   );
 }
