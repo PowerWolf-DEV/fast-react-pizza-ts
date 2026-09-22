@@ -1,14 +1,23 @@
 import type { ReactNode, MouseEventHandler } from "react";
 import { Link } from "react-router";
 
-type ButtonProps = {
+type BaseButtonProps = {
   children: ReactNode;
-  to?: string;
   disabled?: boolean;
   type: "primary" | "secondary" | "small" | "round";
-  onClick?: MouseEventHandler<HTMLButtonElement>;
-  // onClick?: () => void;
 };
+
+type LinkButtonProps = BaseButtonProps & {
+  to: string;
+  onClick?: never;
+};
+
+type ClickButtonProps = BaseButtonProps & {
+  to?: never;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+};
+
+type ButtonProps = LinkButtonProps | ClickButtonProps;
 
 function Button({ children, disabled, to, type, onClick }: ButtonProps) {
   const base =
