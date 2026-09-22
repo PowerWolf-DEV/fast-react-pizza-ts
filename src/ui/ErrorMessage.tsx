@@ -3,7 +3,6 @@ import LinkButton from "./LinkButton";
 
 function ErrorMessage() {
   const error = useRouteError();
-  console.log(error);
   let message = "An unexpected error occurred.";
 
   if (isRouteErrorResponse(error)) {
