@@ -1,4 +1,4 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction, createSelector } from "@reduxjs/toolkit";
 import type { RootState } from "@/store";
 
 // API requires CartItem to have pizzaId instead of id
@@ -65,10 +65,14 @@ export const getCart = (state: RootState) => state.cart.cart;
 export const getTotalCartQuantity = (state: RootState): number =>
   state.cart.cart.reduce((sum, item) => sum + item.quantity, 0);
 
-export const getCurrentQuantityById = (id: number) => (state: RootState) =>
-  state.cart.cart.find((item) => item.pizzaId === id)?.quantity ?? 0;
-
 export const getTotalCartPrice = (state: RootState): number =>
   state.cart.cart.reduce((sum, item) => sum + item.totalPrice, 0);
+
+const selectCartItems = (state: RootState) => state.cart.cart;
+
+export const getCurrentQuantityById = (id: number) =>
+  createSelector([selectCartItems], (items) =>
+    items.find((item) => item.pizzaId === id)?.quantity ?? 0,
+  );
 
 export default cartSlice.reducer;
