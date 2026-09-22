@@ -3,27 +3,45 @@
 import {
   useLoaderData,
   redirect,
-  useFetcher,
   type LoaderFunctionArgs,
 } from "react-router";
 import { getOrder } from "@/services/apiRestaurant";
+import { getMenu } from "@/services/apiRestaurant";
 import type { OrderDetails, Pizza } from "@/services/apiRestaurant";
 import { calcMinutesLeft, formatCurrency, formatDate } from "@/utils/helpers";
 import OrderItem from "./OrderItem";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import UpdateOrder from "./UpdateOrder";
 
-function Order() {
-  const fetcher = useFetcher();
+let menuCache: Pizza[] | null = null;
 
-  useEffect(
-    function () {
-      if (!fetcher.data && fetcher.state === "idle") fetcher.load("/menu");
-    },
-    [fetcher],
-  );
-  // Everyone can search for all orders, so for privacy reasons we're gonna gonna exclude names or address, these are only for the restaurant staff
+async function fetchMenuOnce(): Promise<Pizza[]> {
+  if (menuCache) return menuCache;
+  menuCache = await getMenu();
+  return menuCache;
+}
+
+function Order() {
   const order: OrderDetails = useLoaderData();
+  const [menu, setMenu] = useState<Pizza[] | null>(null);
+  const [isLoadingMenu, setIsLoadingMenu] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchMenuOnce()
+      .then((data) => {
+        if (!cancelled) {
+          setMenu(data);
+          setIsLoadingMenu(false);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setIsLoadingMenu(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const {
     id,
@@ -69,10 +87,10 @@ function Order() {
           <OrderItem
             item={item}
             key={item.pizzaId}
-            isLoadingIngredients={fetcher.state === "loading"}
+            isLoadingIngredients={isLoadingMenu}
             ingredients={
-              fetcher.data?.find((pizza: Pizza) => pizza.id === item.pizzaId)
-                ?.ingredients ?? []
+              menu?.find((pizza: Pizza) => pizza.id === item.pizzaId)?.ingredients ??
+              []
             }
           />
         ))}

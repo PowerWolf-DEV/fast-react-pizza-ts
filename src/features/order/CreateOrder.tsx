@@ -21,6 +21,9 @@ const isValidPhone = (str: string) =>
 
 function CreateOrder() {
   const [withPriority, setWithPriority] = useState(false);
+  const [customer, setCustomer] = useState("");
+  const [phone, setPhone] = useState("");
+  const [addressInput, setAddressInput] = useState("");
   const fetcher = useFetcher();
   const navigate = useNavigate();
 
@@ -42,6 +45,17 @@ function CreateOrder() {
 
   const priorityPrice = withPriority ? totalCartPrice * 0.2 : 0;
   const totalPrice = totalCartPrice + priorityPrice;
+
+  // Sync local state with Redux store when username/address change
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCustomer(username);
+  }, [username]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setAddressInput(address);
+  }, [address]);
 
   // Handle successful order creation
   useEffect(() => {
@@ -77,7 +91,8 @@ function CreateOrder() {
               type="text"
               name="customer"
               id="customer"
-              defaultValue={username}
+              value={customer}
+              onChange={(e) => setCustomer(e.target.value)}
               required
             />
           </div>
@@ -94,6 +109,8 @@ function CreateOrder() {
               name="phone"
               id="phone"
               autoComplete="phone"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
               required
             />
             {phoneError && (
@@ -116,7 +133,8 @@ function CreateOrder() {
               id="address"
               autoComplete="address"
               disabled={isLoadingAddress}
-              defaultValue={address}
+              value={addressInput}
+              onChange={(e) => setAddressInput(e.target.value)}
               required
             />
 
