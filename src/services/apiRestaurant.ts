@@ -1,6 +1,6 @@
 import type { CartItem } from "@/features/cart/cartSlice";
 
-const API_URL = "https://react-fast-pizza-api.jonas.io/api";
+const API_URL = import.meta.env.VITE_API_URL ?? "https://react-fast-pizza-api.jonas.io/api";
 
 export type Pizza = {
   id: number;
@@ -30,21 +30,33 @@ export type OrderDetails = Order & {
 };
 
 export async function getMenu(): Promise<Pizza[]> {
-  const res = await fetch(`${API_URL}/menu`);
-
-  // fetch won't throw error on 400 errors (e.g. when URL is wrong), so we need to do it manually. This will then go into the catch block, where the message is set
-  if (!res.ok) throw Error("Failed getting menu");
-
-  const { data } = await res.json();
-  return data;
+  try {
+    const res = await fetch(`${API_URL}/menu`);
+    if (!res.ok) {
+      throw new Error(`Request failed with status: ${res.status}`, {
+        cause: res,
+      });
+    }
+    const { data } = await res.json();
+    return data;
+  } catch (err) {
+    throw new Error("Failed getting menu", { cause: err });
+  }
 }
 
 export async function getOrder(id: string): Promise<OrderDetails> {
-  const res = await fetch(`${API_URL}/order/${id}`);
-  if (!res.ok) throw Error(`Couldn't find order #${id}`);
-
-  const { data } = await res.json();
-  return data;
+  try {
+    const res = await fetch(`${API_URL}/order/${id}`);
+    if (!res.ok) {
+      throw new Error(`Request failed with status: ${res.status}`, {
+        cause: res,
+      });
+    }
+    const { data } = await res.json();
+    return data;
+  } catch (err) {
+    throw new Error(`Couldn't find order #${id}`, { cause: err });
+  }
 }
 
 export async function createOrder(newOrder: Order): Promise<OrderDetails> {
@@ -57,11 +69,15 @@ export async function createOrder(newOrder: Order): Promise<OrderDetails> {
       },
     });
 
-    if (!res.ok) throw Error();
+    if (!res.ok) {
+      throw new Error(`Request failed with status: ${res.status}`, {
+        cause: res,
+      });
+    }
     const { data } = await res.json();
     return data;
-  } catch {
-    throw Error("Failed creating your order");
+  } catch (err) {
+    throw new Error("Failed creating your order", { cause: err });
   }
 }
 
