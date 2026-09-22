@@ -3,11 +3,11 @@ export type Position = {
   longitude: number;
 };
 
-type Address = {
-  locality: string;
-  city: string;
-  postcode: string;
-  countryName: string;
+export type Address = {
+  locality?: string;
+  city?: string;
+  postcode?: string;
+  countryName?: string;
 };
 
 export async function getAddress({
