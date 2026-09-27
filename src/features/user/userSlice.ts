@@ -27,10 +27,10 @@ export const fetchAddress = createAsyncThunk(
       const geoErr = err as GeolocationPositionError;
       let message: string;
       switch (geoErr.code) {
-        case geoErr.PERMISSION_DENIED:
+        case GeolocationPositionError.PERMISSION_DENIED:
           message = "Please enable location access";
           break;
-        case geoErr.TIMEOUT:
+        case GeolocationPositionError.TIMEOUT:
           message = "Location request timed out";
           break;
         default:
