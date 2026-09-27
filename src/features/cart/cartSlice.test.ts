@@ -64,6 +64,23 @@ describe("cartSlice", () => {
       state = cartReducer(state, clearCart());
       expect(state.cart).toHaveLength(0);
     });
+
+    it("should not crash when increasing quantity of non-existent item", () => {
+      const state = cartReducer(mockState, increaseItemQuantity(999));
+      expect(state.cart).toHaveLength(0);
+    });
+
+    it("should not crash when decreasing quantity of non-existent item", () => {
+      const state = cartReducer(mockState, decreaseItemQuantity(999));
+      expect(state.cart).toHaveLength(0);
+    });
+
+    it("should not crash when decreasing quantity of item not in cart", () => {
+      const stateWithItem = cartReducer(mockState, addItem(mockPizza));
+      const state = cartReducer(stateWithItem, decreaseItemQuantity(999));
+      expect(state.cart).toHaveLength(1);
+      expect(state.cart[0].quantity).toBe(1);
+    });
   });
 
   describe("selectors", () => {
