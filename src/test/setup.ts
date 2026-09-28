@@ -1,27 +1,41 @@
-import '@testing-library/jest-dom';
-import { cleanup } from '@testing-library/react';
-import { afterEach } from 'vitest';
+import "@testing-library/jest-dom";
+import { cleanup } from "@testing-library/react";
+import { afterEach } from "vitest";
 
-interface GeolocationPositionErrorConstructor {
-  new (message: string, code: number): GeolocationPositionError;
-  readonly PERMISSION_DENIED: 1;
-  readonly POSITION_UNAVAILABLE: 2;
-  readonly TIMEOUT: 3;
-}
-
-if (typeof GeolocationPositionError === 'undefined') {
+if (typeof GeolocationPositionError === "undefined") {
   class GeolocationPositionErrorPolyfill extends Error {
-    static readonly PERMISSION_DENIED = 1;
-    static readonly POSITION_UNAVAILABLE = 2;
-    static readonly TIMEOUT = 3;
     code: number;
-    constructor(message: string, code: number) {
+    constructor(message?: string, code?: number) {
       super(message);
-      this.name = 'GeolocationPositionError';
-      this.code = code;
+      this.name = "GeolocationPositionError";
+      this.code = code ?? 0;
     }
   }
-  global.GeolocationPositionError = GeolocationPositionErrorPolyfill as GeolocationPositionErrorConstructor;
+
+  Object.defineProperty(GeolocationPositionErrorPolyfill, "PERMISSION_DENIED", {
+    value: 1,
+    writable: false,
+    enumerable: false,
+    configurable: false,
+  });
+  Object.defineProperty(
+    GeolocationPositionErrorPolyfill,
+    "POSITION_UNAVAILABLE",
+    {
+      value: 2,
+      writable: false,
+      enumerable: false,
+      configurable: false,
+    },
+  );
+  Object.defineProperty(GeolocationPositionErrorPolyfill, "TIMEOUT", {
+    value: 3,
+    writable: false,
+    enumerable: false,
+    configurable: false,
+  });
+
+  global.GeolocationPositionError = GeolocationPositionErrorPolyfill;
 }
 
 afterEach(() => {
